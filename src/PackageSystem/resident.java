@@ -31,5 +31,29 @@ public class resident {
 		
 		return false;
 	}
+	
+	public boolean removeResident(String searchParam) {
+		//identify type of search param to identify how to retrieve from database
+		
+		//get resident from database
+		resident r = database.getResident(searchParam);
+		
+		//deliver any remaining undelivered packages
+		
+		//delete resident from database
+		boolean status = database.deleteResident(r);
+		if (status) return true;
+		
+		return false;
+	}
+	
+	public resident searchRecipient(String searchParam) {
+		//identify type of search param to identify how to retrieve from database
+		
+		//get resident from database
+		resident r = database.getResident(searchParam);
+		
+		return r;
+	}
 
 }
