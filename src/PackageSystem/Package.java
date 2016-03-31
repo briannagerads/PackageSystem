@@ -76,7 +76,7 @@ public class Package {
 		deliveredStatus = true;
 		
 		//put back in database
-		boolean status = database.putPackage(p);
+		boolean status = database.deliverPackage(p);
 		if (status) return true;
 		
 		return false;

@@ -41,4 +41,9 @@ public class DatabaseSupport {
 		//put updated in database
 		return true;
 	}
+	
+	public boolean deliverPackage(Package p) {
+		//put updated boolean into database
+		return true;
+	}
 }
