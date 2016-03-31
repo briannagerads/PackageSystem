@@ -19,6 +19,24 @@ public class DatabaseSupport {
 		return r;
 	}
 	
+	public boolean deleteEmployee(Employee e) {
+		//remove from database
+		
+		return true;
+	}
+	
+	public boolean putEmployee(Employee e) {
+		//put in database
+		return true;
+	}
+	
+	public Employee getEmployee(String name) {
+		//retrieve from database
+		Employee e = null; //resident retrieved from database
+		
+		return e;
+	}
+	
 	public boolean deleteResident(Resident r) {
 		//remove from database
 		
