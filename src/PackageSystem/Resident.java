@@ -1,11 +1,16 @@
 package PackageSystem;
 
+import java.util.List;
+
 public class Resident {
 	public String name;
 	public String address;
 	public String phone;
 	public String email;
+	public Resident r;
+	public int rid;
 	public DatabaseSupport database;
+	public List<Package> packages;
 
 	public Resident(String recipient) {
 		name = recipient;
@@ -23,7 +28,7 @@ public class Resident {
 	public boolean addResident(String name, String address, String phone, String email) {
 		
 		//create resident
-		Resident r = new Resident(name, address, phone, email);
+		r = new Resident(name, address, phone, email);
 		
 		//put in database
 		boolean status = database.putResident(r);
@@ -36,9 +41,20 @@ public class Resident {
 		//identify type of search param to identify how to retrieve from database
 		
 		//get resident from database
-		Resident r = database.getResident(searchParam);
+		r = database.getResident(searchParam);
+		packages = getListOfPackages(r);
 		
+		Package pack;
 		//deliver any remaining undelivered packages
+		while (!packages.isEmpty()) {
+			pack = packages.get(0);
+			pack.deliveredStatus = true;
+			boolean test = database.deliverPackage(pack);
+			if (test) continue;
+			else
+				return false;
+			packages.remove(0);
+		}
 		
 		//delete resident from database
 		boolean status = database.deleteResident(r);
@@ -51,7 +67,7 @@ public class Resident {
 		//identify type of search param to identify how to retrieve from database
 		
 		//get resident from database
-		Resident r = database.getResident(searchParam);
+		r = database.getResident(searchParam);
 		
 		return r;
 	}

@@ -8,24 +8,30 @@ public class Package {
 	public Employee logger;
 	public String note;
 	public int packageID;
+	public Package p;
+	public Resident r;
 	public boolean deliveredStatus;
 	
-	public Package(String recipient, String info) {
-		Resident owner = new Resident(recipient);
-		packageOwner = owner;
+	public Package(Resident recipient, String info) {
+		packageOwner = recipient;
 		description = info;
 		database = new DatabaseSupport();
 		deliveredStatus = false;
 	}
 	
-	public boolean addPackage(String rid, String info) {
+	public boolean addPackage(String name, String info) {
 		
-		//create package
-		Package p = new Package(rid, info);
+		//get resident and then create package
+		r = database.getResident(name);
+		p = new Package(r, info);
+		
+		//add package to resident's list of packages
+		r.packages.add(p);
 		
 		//put in database
 		boolean status = database.putPackage(p);
-		if (status) return true;
+		boolean status2 = database.putListOfPackages(r.packages);
+		if (status && status2) return true;
 		
 		return false;
 	}
@@ -33,7 +39,7 @@ public class Package {
 	public boolean addDescription(int packageID, String description) {
 		
 		//get package
-		Package p = database.getPackage(packageID);
+		p = database.getPackage(packageID);
 		p.description = description;
 		
 		//put description in database
@@ -46,7 +52,7 @@ public class Package {
 	public boolean addNote(int packageID, String note) {
 		
 		//get package
-		Package p = database.getPackage(packageID);
+		p = database.getPackage(packageID);
 		p.note = note;
 		
 		//put description in database
@@ -58,7 +64,7 @@ public class Package {
 	
 	public boolean addLocation(int packageID, String location) {
 		//get package
-		Package p = database.getPackage(packageID);
+		p = database.getPackage(packageID);
 		p.location = location;
 		
 		//put description in database
@@ -72,7 +78,7 @@ public class Package {
 	public boolean deliverPackage(int packageID) {
 		
 		//get package from database
-		Package p = database.getPackage(packageID);
+		p = database.getPackage(packageID);
 		deliveredStatus = true;
 		
 		//put back in database
