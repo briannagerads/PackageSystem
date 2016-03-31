@@ -1,29 +1,29 @@
 package PackageSystem;
 
-public class resident {
+public class Resident {
 	public String name;
 	public String address;
 	public String phone;
 	public String email;
-	public databaseSupport database;
+	public DatabaseSupport database;
 
-	public resident(String recipient) {
+	public Resident(String recipient) {
 		name = recipient;
-		database = new databaseSupport();
+		database = new DatabaseSupport();
 	}
 	
-	public resident(String name, String address, String phone, String email) {
+	public Resident(String name, String address, String phone, String email) {
 		this.name = name;
 		this.address = address;
 		this.phone = phone;
 		this.email = email;
-		database = new databaseSupport();
+		database = new DatabaseSupport();
 	}
 	
 	public boolean addResident(String name, String address, String phone, String email) {
 		
 		//create resident
-		resident r = new resident(name, address, phone, email);
+		Resident r = new Resident(name, address, phone, email);
 		
 		//put in database
 		boolean status = database.putResident(r);
@@ -36,7 +36,7 @@ public class resident {
 		//identify type of search param to identify how to retrieve from database
 		
 		//get resident from database
-		resident r = database.getResident(searchParam);
+		Resident r = database.getResident(searchParam);
 		
 		//deliver any remaining undelivered packages
 		
@@ -47,11 +47,11 @@ public class resident {
 		return false;
 	}
 	
-	public resident searchRecipient(String searchParam) {
+	public Resident searchRecipient(String searchParam) {
 		//identify type of search param to identify how to retrieve from database
 		
 		//get resident from database
-		resident r = database.getResident(searchParam);
+		Resident r = database.getResident(searchParam);
 		
 		return r;
 	}

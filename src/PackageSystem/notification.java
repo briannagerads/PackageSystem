@@ -1,5 +1,5 @@
 package PackageSystem;
 
-public class notification {
+public class Notification {
 
 }

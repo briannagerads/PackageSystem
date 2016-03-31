@@ -1,43 +1,43 @@
 package PackageSystem;
 
-public class databaseSupport {
+public class DatabaseSupport {
 	
-	public boolean putPackage(packag p) {
+	public boolean putPackage(Package p) {
 		//put in database
 		return true;
 	}
 	
-	public boolean putResident(resident r) {
+	public boolean putResident(Resident r) {
 		//put in database
 		return true;
 	}
 	
-	public resident getResident(String name) {
+	public Resident getResident(String name) {
 		//retrieve from database
-		resident r = null; //resident retrieved from database
+		Resident r = null; //resident retrieved from database
 		
 		return r;
 	}
 	
-	public boolean deleteResident(resident r) {
+	public boolean deleteResident(Resident r) {
 		//remove from database
 		
 		return true;
 	}
 	
-	public packag getPackage(int packageID) {
+	public Package getPackage(int packageID) {
 		//retrieve from database
-		packag p = null; //resident retrieved from database
+		Package p = null; //resident retrieved from database
 		
 		return p;
 	}
 	
-	public boolean putDescription(packag p) {
+	public boolean putDescription(Package p) {
 		//put updated in database
 		return true;
 	}
 	
-	public boolean putNote(packag p) {
+	public boolean putNote(Package p) {
 		//put updated in database
 		return true;
 	}
