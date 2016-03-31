@@ -62,7 +62,7 @@ public class Package {
 		p.location = location;
 		
 		//put description in database
-		boolean status = database.putDescription(p);
+		boolean status = database.putLocation(p);
 		if (status) return true;
 				
 		

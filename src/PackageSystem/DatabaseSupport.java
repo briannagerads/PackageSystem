@@ -46,4 +46,9 @@ public class DatabaseSupport {
 		//put updated boolean into database
 		return true;
 	}
+	
+	public boolean putLocation(Package p) {
+		//put updated boolean into database
+		return true;
+	}
 }
