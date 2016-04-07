@@ -3,7 +3,7 @@ package PackageSystem;
 public class Employee {
 	public String name;
 	public int employeeID;
-	public DatabaseSupport database;
+	public DatabaseSupport database = DatabaseSupport.getSingleton();
 	
 	public Employee(String name) {
 		this.name = name;

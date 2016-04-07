@@ -15,11 +15,13 @@ public class Package {
 	public Package(Resident recipient, String info) {
 		packageOwner = recipient;
 		description = info;
-		database = new DatabaseSupport();
+		database = DatabaseSupport.getSingleton();
 		deliveredStatus = false;
 	}
 	
-	public boolean addPackage(String name, String info) {
+	
+	
+	public boolean addPackage(int name, String info) {
 		
 		//get resident and then create package
 		r = database.getResident(name);
@@ -30,7 +32,7 @@ public class Package {
 		
 		//put in database
 		boolean status = database.putPackage(p);
-		boolean status2 = database.putListOfPackages(r.packages);
+		boolean status2 = database.putListOfPackages(r.packages);//UGH: we don't need to do this.
 		if (status && status2) return true;
 		
 		return false;
@@ -39,12 +41,13 @@ public class Package {
 	public boolean addDescription(int packageID, String description) {
 		
 		//get package
-		p = database.getPackage(packageID);
+		p = database.getPackage(packageID);//do we really need to do this? we already got the package from the database
 		p.description = description;
 		
 		//put description in database
 		boolean status = database.putDescription(p);
-		if (status) return true;
+		if (status) 
+			return true;
 		
 		return false;
 	}

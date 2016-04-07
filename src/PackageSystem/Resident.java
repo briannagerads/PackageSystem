@@ -14,7 +14,7 @@ public class Resident {
 
 	public Resident(String recipient) {
 		name = recipient;
-		database = new DatabaseSupport();
+		database = DatabaseSupport.getSingleton();
 	}
 	
 	public Resident(String name, String address, String phone, String email) {
@@ -22,7 +22,7 @@ public class Resident {
 		this.address = address;
 		this.phone = phone;
 		this.email = email;
-		database = new DatabaseSupport();
+		database = DatabaseSupport.getSingleton();
 	}
 	
 	public boolean addResident(String name, String address, String phone, String email) {
@@ -37,7 +37,7 @@ public class Resident {
 		return false;
 	}
 	
-	public boolean removeResident(String searchParam) {
+	public boolean removeResident(int searchParam) {
 		//identify type of search param to identify how to retrieve from database
 		
 		//get resident from database
