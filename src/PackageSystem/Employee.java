@@ -25,10 +25,10 @@ public class Employee {
 		return false;
 	}
 	
-	public boolean removeEmployee(String name) {
+	public boolean removeEmployee(int eid) {
 		
 		//get employee from database
-		Employee e = database.getEmployee(name);
+		Employee e = database.getEmployee(eid);
 		
 		//remove employee from database
 		boolean status = database.deleteEmployee(e);

@@ -42,7 +42,7 @@ public class Resident {
 		
 		//get resident from database
 		r = database.getResident(searchParam);
-		packages = getListOfPackages(r);
+		packages = database.getListOfPackagesForResident(r);
 		
 		Package pack;
 		//deliver any remaining undelivered packages
@@ -50,10 +50,11 @@ public class Resident {
 			pack = packages.get(0);
 			pack.deliveredStatus = true;
 			boolean test = database.deliverPackage(pack);
-			if (test) continue;
+			if (test) 
+				continue;
 			else
 				return false;
-			packages.remove(0);
+			//packages.remove(0);
 		}
 		
 		//delete resident from database
@@ -63,13 +64,11 @@ public class Resident {
 		return false;
 	}
 	
-	public Resident searchRecipient(String searchParam) {
+	public List<Resident> searchRecipient(String searchParam) {
 		//identify type of search param to identify how to retrieve from database
 		
-		//get resident from database
-		r = database.getResident(searchParam);
-		
-		return r;
+		//get residents from database
+		return database.searchResident(searchParam);
 	}
 
 }

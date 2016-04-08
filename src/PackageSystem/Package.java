@@ -32,10 +32,7 @@ public class Package {
 		
 		//put in database
 		boolean status = database.putPackage(p);
-		boolean status2 = database.putListOfPackages(r.packages);//UGH: we don't need to do this.
-		if (status && status2) return true;
-		
-		return false;
+		return status;
 	}
 	
 	public boolean addDescription(int packageID, String description) {

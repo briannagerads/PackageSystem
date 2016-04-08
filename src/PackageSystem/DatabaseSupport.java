@@ -332,4 +332,34 @@ public class DatabaseSupport {
 		}
 		return true;
 	}
+	
+	public List<Resident> searchResident(String searchParam){
+		ArrayList<Resident> list = new ArrayList<>();
+		try {
+			//query database
+			ResultSet rs = query("SELECT * FROM `coms362`.`residents` WHERE `name` LIKE '%"+searchParam+"%' OR `address` LIKE '%"+searchParam+"%' OR `phone` LIKE '%"+searchParam+"%' OR `email` LIKE '%"+searchParam+"%'");
+			
+			while(rs.next()){
+				Resident r;
+				//get params
+				String name = rs.getString("name");
+				String address = rs.getString("address");
+				String phone = rs.getString("phone");
+				String email = rs.getString("email");
+				
+				//create object
+				r = new Resident(name, address, phone, email);
+				list.add(r);
+			}
+			
+			//close up
+			rs.getStatement().getConnection().close();
+			rs.getStatement().close();
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return list;
+	}
 }
