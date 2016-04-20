@@ -82,7 +82,7 @@ public class Resident {
 		this.address = address;
 		
 		//put description in database
-		if (database.putResident(r)) return true;
+		if (database.putAddress(r)) return true;
 				
 		
 		return false;
@@ -94,7 +94,7 @@ public class Resident {
 		this.phone = phone;
 		
 		//put description in database
-		if (database.putResident(r)) return true;
+		if (database.putPhone(r)) return true;
 				
 		
 		return false;
@@ -106,7 +106,7 @@ public class Resident {
 		this.email = email;
 		
 		//put description in database
-		if (database.putResident(r)) return true;
+		if (database.putEmail(r)) return true;
 				
 		
 		return false;
@@ -118,7 +118,7 @@ public class Resident {
 		this.username = username;
 		
 		//put description in database
-		if (database.putResident(r)) return true;
+		if (database.putUsername(r)) return true;
 				
 		
 		return false;

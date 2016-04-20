@@ -1,5 +1,7 @@
 package PackageSystem;
 
+import java.util.List;
+
 public class Package {
 	public Resident packageOwner;
 	public String description;
@@ -99,7 +101,7 @@ public class Package {
 		this.company = company;
 		
 		//put description in database
-		if (database.putPackage(p)) return true;
+		if (database.putCompany(p)) return true;
 				
 		
 		return false;
@@ -111,7 +113,7 @@ public class Package {
 		this.date = date;
 		
 		//put description in database
-		if (database.putPackage(p)) return true;
+		if (database.putDate(p)) return true;
 				
 		
 		return false;
@@ -123,8 +125,96 @@ public class Package {
 		this.location = location;
 		
 		//put description in database
-		if (database.putPackage(p)) return true;
+		if (database.putLocation(p)) return true;
 				
+		
+		return false;
+	}
+	
+	/**
+	 * Iteration 3
+	 */
+	
+	public List<Package> retrieveAllPackages() {
+	
+		//retrieve all packages from database
+		List<Package> allPackages = database.getAllPackages();
+		
+		return allPackages;
+	}
+	
+	public boolean signature(int packageID, Employee e) {
+		//get package
+		p = database.getPackage(packageID);
+		this.logger = e;
+		
+		//put description in database
+		if (database.putLogger(p)) return true;
+				
+		
+		return false;
+	}
+	
+	public boolean notificationRecieveText(int packageID) {
+		//get package
+		p = database.getPackage(packageID);
+		
+		//get Resident?
+		//r = database.getResident(packageOwner);
+		
+		//get phone number
+		r.phone = database.getPhone(r);
+		
+		//send text
+		
+		
+		return false;
+	}
+	
+	public boolean notificationRecieveEmail(int packageID) {
+		//get package
+		p = database.getPackage(packageID);
+		
+		//get Resident?
+		//r = database.getResident(packageOwner);
+		
+		//get phone number
+		r.phone = database.getEmail(r);
+		
+		//send email
+		
+		
+		return false;
+	}
+	
+	public boolean notificationDeliverText(int packageID) {
+		//get package
+		p = database.getPackage(packageID);
+		
+		//get Resident?
+		//r = database.getResident(packageOwner);
+		
+		//get phone number
+		r.phone = database.getPhone(r);
+		
+		//send text
+		
+		
+		return false;
+	}
+	
+	public boolean notificationDeliverEmail(int packageID) {
+		//get package
+		p = database.getPackage(packageID);
+		
+		//get Resident?
+		//r = database.getResident(packageOwner);
+		
+		//get phone number
+		r.phone = database.getEmail(r);
+		
+		//send email
+		
 		
 		return false;
 	}

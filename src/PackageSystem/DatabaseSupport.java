@@ -362,4 +362,69 @@ public class DatabaseSupport {
 		}
 		return list;
 	}
+	
+	
+	/**
+	 * Add for Iteration 2
+	 */
+	
+	public List<Package> getHistory(Resident r) {
+		
+		return null;
+	}
+	
+	public boolean putCompany(Package pid) {
+		
+		return false;
+	}
+	
+	public boolean putDate(Package pid) {
+		
+		return false;
+	}
+	
+	public boolean putAddress(Resident r) {
+		
+		return false;
+	}
+	
+	public boolean putPhone(Resident r) {
+		
+		return false;
+	}	
+	
+	public boolean putEmail(Resident r) {
+		
+		return false;
+	}
+	
+	public boolean putUsername(Resident r) {
+		
+		return false;
+	}
+	
+	/**
+	 * Add for Iteration 3
+	 */
+	
+	public List<Package> getAllPackages() {
+		
+		return null;
+	}
+	
+	public boolean putLogger(Package p) {
+		
+		return false;
+	}
+	
+	public String getPhone(Resident r) {
+		
+		return null;
+	}
+	
+	public String getEmail(Resident r) {
+		
+		return null;
+	}
+	
 }
