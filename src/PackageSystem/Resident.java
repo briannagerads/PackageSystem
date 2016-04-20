@@ -7,7 +7,9 @@ public class Resident {
 	public String address;
 	public String phone;
 	public String email;
+	public String username;
 	public Resident r;
+	public Package p;
 	public int rid;
 	public DatabaseSupport database;
 	public List<Package> packages;
@@ -69,6 +71,67 @@ public class Resident {
 		
 		//get residents from database
 		return database.searchResident(searchParam);
+	}
+	
+	/**
+	 * Iteration 2
+	 */
+	public boolean addAddress(int rid, String address) {
+		//get package
+		r = database.getResident(rid);
+		this.address = address;
+		
+		//put description in database
+		if (database.putResident(r)) return true;
+				
+		
+		return false;
+	}
+	
+	public boolean addPhone(int rid, String phone) {
+		//get package
+		r = database.getResident(rid);
+		this.phone = phone;
+		
+		//put description in database
+		if (database.putResident(r)) return true;
+				
+		
+		return false;
+	}
+	
+	public boolean addEmail(int rid, String email) {
+		//get package
+		r = database.getResident(rid);
+		this.email = email;
+		
+		//put description in database
+		if (database.putResident(r)) return true;
+				
+		
+		return false;
+	}
+	
+	public boolean addUsername(int rid, String username) {
+		//get package
+		r = database.getResident(rid);
+		this.username = username;
+		
+		//put description in database
+		if (database.putResident(r)) return true;
+				
+		
+		return false;
+	}
+	
+	public List<Package> retrieveHistory(int rid) {
+		//get package
+		r = database.getResident(rid);
+		
+		//retrieve history from database
+		List<Package> history = database.getHistory(r);			
+		
+		return history;
 	}
 
 }

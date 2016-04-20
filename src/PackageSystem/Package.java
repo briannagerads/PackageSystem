@@ -7,6 +7,8 @@ public class Package {
 	public String location;
 	public Employee logger;
 	public String note;
+	public String company;
+	public String date;
 	public int packageID;
 	public Package p;
 	public Resident r;
@@ -84,6 +86,45 @@ public class Package {
 		//put back in database
 		boolean status = database.deliverPackage(p);
 		if (status) return true;
+		
+		return false;
+	}
+	
+	/**
+	 * Iteration 2
+	 */
+	public boolean addCompany(int packageID, String company) {
+		//get package
+		p = database.getPackage(packageID);
+		this.company = company;
+		
+		//put description in database
+		if (database.putPackage(p)) return true;
+				
+		
+		return false;
+	}
+	
+	public boolean addDate(int packageID, String date) {
+		//get package
+		p = database.getPackage(packageID);
+		this.date = date;
+		
+		//put description in database
+		if (database.putPackage(p)) return true;
+				
+		
+		return false;
+	}
+	
+	public boolean reroutePackage(int packageID, String location) {
+		//get package
+		p = database.getPackage(packageID);
+		this.location = location;
+		
+		//put description in database
+		if (database.putPackage(p)) return true;
+				
 		
 		return false;
 	}

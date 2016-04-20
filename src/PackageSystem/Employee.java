@@ -12,8 +12,8 @@ public class Employee {
 	public boolean addEmployee(String name) {
 		
 		//check that employee doesn't already exist
-		boolean check = database.checkEmployeeExistence(name);
-		if (check) return false;
+		//boolean check = database.checkEmployeeExistence(name);
+		//if (check) return false;
 		
 		//create employee
 		Employee e = new Employee(name);
