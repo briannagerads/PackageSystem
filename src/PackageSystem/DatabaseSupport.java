@@ -4,6 +4,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author davidboschwitz
+ * @author briannagerads
+ *
+ */
 public class DatabaseSupport {
 
 	// JDBC driver name and database URL
@@ -13,11 +19,12 @@ public class DatabaseSupport {
 	// Database credentials
 	static final String USER = "smile";
 	static final String PASS = "jCRMXKQC9hSV68ZL";
-
 	private static DatabaseSupport singleton = null;
+	private boolean closed = false;
+	private Connection connection;
 
 	public static DatabaseSupport getSingleton() {
-		if (singleton == null) {
+		if (singleton == null || singleton.closed) {
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
 			} catch (ClassNotFoundException cnfe) {
@@ -27,122 +34,113 @@ public class DatabaseSupport {
 		}
 		return singleton;
 	}
-	
+
 	private DatabaseSupport() {
+		open();
 	}
 
-//	private void init() {
-//		try {
-//			// STEP 2: Register JDBC driver
-//
-//			// STEP 3: Open a connection
-//			System.out.println("Connecting to database...");
-//
-//			// STEP 4: Execute a query
-//			System.out.println("Creating statement...");
-//			stmt = conn.createStatement();
-//			String sql;
-//			sql = "SELECT id, first, last, age FROM Employees";
-//			ResultSet rs = stmt.executeQuery(sql);
-//
-//			// STEP 5: Extract data from result set
-//			while (rs.next()) {
-//				// Retrieve by column name
-//				int id = rs.getInt("id");
-//				int age = rs.getInt("age");
-//				String first = rs.getString("first");
-//				String last = rs.getString("last");
-//
-//				// Display values
-//				System.out.print("ID: " + id);
-//				System.out.print(", Age: " + age);
-//				System.out.print(", First: " + first);
-//				System.out.println(", Last: " + last);
-//			}
-//			// STEP 6: Clean-up environment
-//			rs.close();
-//			stmt.close();
-//			conn.close();
-//		} catch (SQLException se) {
-//			// Handle errors for JDBC
-//			se.printStackTrace();
-//		} catch (Exception e) {
-//			// Handle errors for Class.forName
-//			e.printStackTrace();
-//		} finally {
-//			// finally block used to close resources
-//			try {
-//				if (stmt != null)
-//					stmt.close();
-//			} catch (SQLException se2) {
-//			} // nothing we can do
-//			try {
-//				if (conn != null)
-//					conn.close();
-//			} catch (SQLException se) {
-//				se.printStackTrace();
-//			} // end finally try
-//		} // end try
-//		System.out.println("Goodbye!");
-//	}
-
-	private ResultSet query(String sql) throws SQLException {
-		return DriverManager.getConnection(DB_URL, USER, PASS).createStatement().executeQuery(sql);
-	}
-
-	public boolean putPackage(Package p) {
-		// put in database
+	private void open() {
 		try {
-			//query database
-			ResultSet rs = query("INSERT INTO `coms362`.`packages` (`pid`, `resident`, `notes`, `timestamp`) VALUES (NULL, '"
-					+ p.packageID + "', '" + p.note + "', CURRENT_TIMESTAMP);");
-
-			
-			//close up
-			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
-			rs.close();
+			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
-			return false;
+			closed = true;
 		}
-		return true;
+	}
+
+	public void close() throws SQLException {
+		closed = true;
+		connection.close();
+	}
+	//
+	// private ResultSet query(String sql) throws SQLException {
+	// return DriverManager.getConnection(DB_URL, USER,
+	// PASS).createStatement().executeQuery(sql);
+	// }
+
+	public ResultSet query(String sql) throws SQLException {
+		return connection.createStatement().executeQuery(sql);
+	}
+
+	public int update(String sql) throws SQLException {
+		return connection.createStatement().executeUpdate(sql);
+	}
+
+	private Package packageFromRS(ResultSet rs) throws SQLException {
+		Package p = new Package(getResident(rs.getInt("resident")), rs.getString("info"));
+		
+		p.packageID = rs.getInt("pid");
+
+		p.logger = getEmployee(rs.getInt("logger"));
+		p.location = rs.getString("location");
+		p.note = rs.getString("notes");
+		p.deliveredStatus = rs.getBoolean("status");
+		p.date = rs.getString("timestamp");
+		p.logger = getEmployee(rs.getInt("logger"));
+		p.company = rs.getString("company");
+
+		return p;
+	}
+
+	private Resident residentFromRS(ResultSet rs) throws SQLException {
+		Resident r;
+		// get params
+		String name = rs.getString("name");
+		String address = rs.getString("address");
+		String phone = rs.getString("phone");
+		String email = rs.getString("email");
+
+		// create object
+		r = new Resident(name, address, phone, email);
+		r.rid = rs.getInt("uid");
+		r.username = rs.getString("username");
+		return r;
+	}
+
+	public boolean putPackage(Package p) {		
+		// put update in database
+		int i = -1;
+		try {
+			// query database
+			i = update("INSERT INTO `coms362`.`packages` (`pid`, `resident`, `info`, `timestamp`, `logger`, `notes`, `status`, `location`, `company`) VALUES (NULL, '"
+					+ p.r.rid + "', '" + p.description + "', CURRENT_TIMESTAMP, '"+p.logger+"', '"+p.note+"', 0, '"+p.location+"', '"+p.company+"');");
+
+			// close up
+
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		return i != -1;
 	}
 
 	public boolean putResident(Resident r) {
-		// put in database
+		// put update in database
+		int i = -1;
 		try {
-			//query database
-			ResultSet rs = query("INSERT INTO `coms362`.`residents` (`uid`, `name`, `address`, `phone`, `email`) VALUES (NULL, '"
-					+ r.name + "', '" + r.address + "', '" + r.phone + "', '" + r.email + "');");
-			
-			//close up
-			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
-			rs.close();
+			// query database
+			i = update("INSERT INTO `coms362`.`residents` (`uid`, `name`, `address`, `phone`, `email`, `username`) VALUES (NULL, '"
+					+ r.name + "', '" + r.address + "', '" + r.phone + "', '" + r.email + "', '"+r.username+"');");
+
+			// close up
+
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
-			return false;
 		}
-		return true;
+		return i != -1;
 	}
 
 	public Resident getResident(int uid) {
 		Resident r = null; // resident retrieved from database
 		try {
-			//query database
+			// query database
 			ResultSet rs = query("SELECT * FROM `coms362`.`residents` WHERE `uid` = " + uid + ";");
-			
-			//get fields
-			String name = rs.getString("name");
-			String address = rs.getString("address");
-			String phone = rs.getString("phone");
-			String email = rs.getString("email");
-			
-			//create object
-			r = new Resident(name, address, phone, email);
-			
-			//close up
+
+			// get fields
+			if (rs.next()) {
+				r = residentFromRS(rs);
+			}
+
+			// close up
 			rs.getStatement().getConnection().close();
 			rs.getStatement().close();
 			rs.close();
@@ -160,20 +158,18 @@ public class DatabaseSupport {
 	}
 
 	public boolean putEmployee(Employee e) {
-		// put in database
+		// put update in database
+		int i = -1;
 		try {
-			//query database
-			ResultSet rs = query("INSERT INTO `coms362`.`employees` (`eid`, `name`) VALUES (NULL, '" + e.name + "');");
-			
-			//close up
-			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
-			rs.close();
+			// query database
+			i = update("INSERT INTO `coms362`.`employees` (`eid`, `name`) VALUES (NULL, '" + e.name + "');");
+
+			// close up
+
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
-			return false;
 		}
-		return true;
+		return i != -1;
 	}
 
 	public Employee getEmployee(int eid) {
@@ -181,11 +177,12 @@ public class DatabaseSupport {
 		Employee e = null; // resident retrieved from database
 		try {
 			ResultSet rs = query("SELECT * FROM `coms362`.`employees` WHERE `eid` = " + eid + ";");
-			String name = rs.getString("name");
-			e = new Employee(name);
-			e.employeeID = eid;
-			
-			//close up
+			if (rs.next()) {
+				String name = rs.getString("name");
+				e = new Employee(name);
+				e.employeeID = eid;
+			}
+			// close up
 			rs.getStatement().getConnection().close();
 			rs.getStatement().close();
 			rs.close();
@@ -206,18 +203,13 @@ public class DatabaseSupport {
 		// retrieve from database
 		Package p = null; // resident retrieved from database
 		try {
-			//query database
+			// query database
 			ResultSet rs = query("SELECT * FROM `coms362`.`packages` WHERE `pid` = " + packageID);
+			if (rs.next()) {
+				p = packageFromRS(rs);
+			}
 
-			p = new Package(getResident(rs.getInt("resident")), rs.getString("info"));
-			p.packageID = packageID;
-
-			p.logger = getEmployee(rs.getInt("logger"));
-			p.location = rs.getString("location");
-			p.note = rs.getString("notes");
-			p.deliveredStatus = rs.getBoolean("status");
-			
-			//close up
+			// close up
 			rs.getStatement().getConnection().close();
 			rs.getStatement().close();
 			rs.close();
@@ -228,37 +220,30 @@ public class DatabaseSupport {
 
 		return p;
 	}
-	
+
 	public List<Package> getListOfPackagesForResident(Resident r) {
 		return getListOfPackagesForResident(r.rid);
 	}
-	
+
 	public List<Package> getListOfPackagesForResident(int residentID) {
 		ArrayList<Package> list = new ArrayList<>();
-		try{
-			ResultSet rs = query("SELECT * FROM `coms362`.`packages` WHERE `resident` = "+residentID+";");
-			
-			//iterate through all results
-			while(rs.next()){
-				//create package object
-				Package p = new Package(getResident(rs.getInt("resident")), rs.getString("info"));
-				p.packageID = rs.getInt("pid");
+		try {
+			ResultSet rs = query("SELECT * FROM `coms362`.`packages` WHERE `resident` = " + residentID + ";");
 
-				//get and set values
-				p.logger = getEmployee(rs.getInt("loggerEID"));
-				p.location = rs.getString("location");
-				p.note = rs.getString("notes");
-				p.deliveredStatus = rs.getBoolean("status");
-				
-				//add to list
+			// iterate through all results
+			while (rs.next()) {
+				// create package object
+				Package p = packageFromRS(rs);
+
+				// add to list
 				list.add(p);
 			}
-			
-			//close up
+
+			// close up
 			rs.getStatement().getConnection().close();
 			rs.getStatement().close();
 			rs.close();
-		}catch(SQLException e){
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -266,93 +251,82 @@ public class DatabaseSupport {
 	}
 
 	public boolean putDescription(Package p) {
-		// put updated in database
+		// put update in database
+		int i = -1;
 		try {
-			//query database
-			ResultSet rs = query("UPDATE `coms362`.`packages` SET `info` = '"+p.description+"' WHERE `packages`.`pid` = " + p.packageID + ";");
-			
-			//close up
-			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
-			rs.close();
+			// query database
+			i = update("UPDATE `coms362`.`packages` SET `info` = '" + p.description + "' WHERE `packages`.`pid` = "
+					+ p.packageID + ";");
+
+			// close up
+
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
-		return true;
+		return i != -1;
 	}
 
 	public boolean putNote(Package p) {
-		// put updated in database
+		// put update in database
+		int i = -1;
 		try {
-			//query database
-			ResultSet rs = query("UPDATE `coms362`.`packages` SET `note` = '"+p.note+"' WHERE `packages`.`pid` = " + p.packageID + ";");
-			
-			//close up
-			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
-			rs.close();
+			// query database
+			i = update("UPDATE `coms362`.`packages` SET `note` = '" + p.note + "' WHERE `packages`.`pid` = "
+					+ p.packageID + ";");
+
+			// close up
+
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
-		return true;
+		return i != -1;
 	}
 
 	public boolean deliverPackage(Package p) {
-		// put updated boolean into database
+		// put update in database
+		int i = -1;
 		try {
-			//query database
-			ResultSet rs = query("UPDATE `coms362`.`packages` SET `status` = '1' WHERE `packages`.`pid` = " + p.packageID + ";");
-			
-			//close up
-			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
-			rs.close();
+			// query database
+			i = update("UPDATE `coms362`.`packages` SET `status` = '1' WHERE `packages`.`pid` = " + p.packageID + ";");
+
+			// close up
+
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
-		return true;
+		return i != -1;
 	}
 
 	public boolean putLocation(Package p) {
-		// put updated boolean into database
+		// put update in database
+		int i = -1;
 		try {
-			//query database
-			ResultSet rs = query("UPDATE `coms362`.`packages` SET `location` = '"+p.location+"' WHERE `packages`.`pid` = " + p.packageID + ";");
-			
-			//close up
-			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
-			rs.close();
+			// query database
+			i = update("UPDATE `coms362`.`packages` SET `location` = '" + p.location + "' WHERE `packages`.`pid` = "
+					+ p.packageID + ";");
+
+			// close up
+
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
-		return true;
+		return i != -1;
 	}
-	
-	public List<Resident> searchResident(String searchParam){
+
+	public List<Resident> searchResident(String searchParam) {
 		ArrayList<Resident> list = new ArrayList<>();
 		try {
-			//query database
-			ResultSet rs = query("SELECT * FROM `coms362`.`residents` WHERE `name` LIKE '%"+searchParam+"%' OR `address` LIKE '%"+searchParam+"%' OR `phone` LIKE '%"+searchParam+"%' OR `email` LIKE '%"+searchParam+"%'");
-			
-			while(rs.next()){
-				Resident r;
-				//get params
-				String name = rs.getString("name");
-				String address = rs.getString("address");
-				String phone = rs.getString("phone");
-				String email = rs.getString("email");
-				
-				//create object
-				r = new Resident(name, address, phone, email);
+			// query database
+			ResultSet rs = query("SELECT * FROM `coms362`.`residents` WHERE `name` LIKE '%" + searchParam
+					+ "%' OR `address` LIKE '%" + searchParam + "%' OR `phone` LIKE '%" + searchParam
+					+ "%' OR `email` LIKE '%" + searchParam + "%'");
+
+			while (rs.next()) {
+				Resident r = residentFromRS(rs);
 				list.add(r);
 			}
-			
-			//close up
+
+			// close up
 			rs.getStatement().getConnection().close();
 			rs.getStatement().close();
 			rs.close();
@@ -362,69 +336,174 @@ public class DatabaseSupport {
 		}
 		return list;
 	}
-	
-	
+
 	/**
 	 * Add for Iteration 2
 	 */
-	
+
 	public List<Package> getHistory(Resident r) {
-		
-		return null;
+		ArrayList<Package> list = new ArrayList<>();
+		try {
+			ResultSet rs = query("SELECT * FROM `coms362`.`packages` WHERE `resident` = " + r.rid + ";");
+
+			// iterate through all results
+			while (rs.next()) {
+				// create package object
+				Package p = packageFromRS(rs);
+
+				// add to list
+				list.add(p);
+			}
+
+			// close up
+			rs.getStatement().getConnection().close();
+			rs.getStatement().close();
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return list;
 	}
-	
-	public boolean putCompany(Package pid) {
-		
-		return false;
+
+	public boolean putCompany(Package p) {
+		// put update in database
+		int i = -1;
+		try {
+			// query database
+			i = update("UPDATE `coms362`.`packages` SET `company` = '" + p.company + "' WHERE `packages`.`pid` = "
+					+ p.packageID + ";");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return i != -1;
 	}
-	
-	public boolean putDate(Package pid) {
-		
-		return false;
+
+	public boolean putDate(Package p) {
+		// put update in database
+		int i = -1;
+		try {
+			// query database
+			i = update("UPDATE `coms362`.`packages` SET `timestamp` = '" + p.date + "' WHERE `packages`.`pid` = "
+					+ p.packageID + ";");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return i != -1;
 	}
-	
+
 	public boolean putAddress(Resident r) {
-		
-		return false;
+		// put update in database
+		int i = -1;
+		try {
+			// query database
+			i = update("UPDATE `coms362`.`residents` SET `address` = '" + r.address
+					+ "' WHERE `residents`.`rid` = " + r.rid + ";");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return i != -1;
 	}
-	
+
 	public boolean putPhone(Resident r) {
-		
-		return false;
-	}	
-	
+		// put update in database
+		int i = -1;
+		try {
+			// query database
+			i = update("UPDATE `coms362`.`residents` SET `phone` = '" + r.phone
+					+ "' WHERE `residents`.`rid` = " + r.rid + ";");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return i != -1;
+	}
+
 	public boolean putEmail(Resident r) {
-		
-		return false;
+		// put update in database
+		int i = -1;
+		try {
+			// query database
+			i = update("UPDATE `coms362`.`residents` SET `email` = '" + r.email
+					+ "' WHERE `residents`.`rid` = " + r.rid + ";");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return i != -1;
 	}
-	
+
 	public boolean putUsername(Resident r) {
-		
-		return false;
+		// put update in database
+		int i = -1;
+		try {
+			// query database
+			i = update("UPDATE `coms362`.`residents` SET `username` = '" + r.username
+					+ "' WHERE `residents`.`rid` = " + r.rid + ";");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return i != -1;
 	}
-	
+
 	/**
 	 * Add for Iteration 3
 	 */
-	
+
 	public List<Package> getAllPackages() {
-		
-		return null;
+		ArrayList<Package> list = new ArrayList<>();
+		try {
+			ResultSet rs = query("SELECT * FROM `coms362`.`packages`;");
+			// this is an intense query (will return entire table), this is not
+			// recommended, but fits the use case iterate through all results
+			while (rs.next()) {
+				// create package object
+				Package p = packageFromRS(rs);
+
+				// add to list
+				list.add(p);
+			}
+
+			// close up
+			rs.getStatement().getConnection().close();
+			rs.getStatement().close();
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return list;
 	}
-	
+
 	public boolean putLogger(Package p) {
-		
-		return false;
+		// put update in database
+		int i = -1;
+		try {
+			// query database
+			i = update("UPDATE `coms362`.`packages` SET `logger` = '" + p.logger + "' WHERE `packages`.`pid` = "
+					+ p.packageID + ";");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return i != -1;
 	}
-	
+
 	public String getPhone(Resident r) {
-		
-		return null;
+		// get phone from database using existing methods
+		Resident getR = getResident(r.rid);
+
+		// return only phone
+		return getR.phone;
 	}
-	
+
 	public String getEmail(Resident r) {
-		
-		return null;
+		// get email from database using existing methods
+		Resident getR = getResident(r.rid);
+
+		// return only email
+		return getR.email;
 	}
-	
+
 }

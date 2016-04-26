@@ -2,6 +2,11 @@ package PackageSystem;
 
 import java.util.List;
 
+/**
+ * 
+ * @author briannagerads
+ *
+ */
 public class Resident {
 	public String name;
 	public String address;

@@ -1,5 +1,10 @@
 package PackageSystem;
 
+/**
+ * 
+ * @author briannagerads
+ *
+ */
 public class Employee {
 	public String name;
 	public int employeeID;

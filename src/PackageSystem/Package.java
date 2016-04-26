@@ -2,6 +2,11 @@ package PackageSystem;
 
 import java.util.List;
 
+/**
+ * 
+ * @author briannagerads
+ *
+ */
 public class Package {
 	public Resident packageOwner;
 	public String description;

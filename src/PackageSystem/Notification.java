@@ -1,5 +1,10 @@
 package PackageSystem;
 
+/**
+ * 
+ * @author briannagerads
+ *
+ */
 public class Notification {
 	
 	public DatabaseSupport database;
