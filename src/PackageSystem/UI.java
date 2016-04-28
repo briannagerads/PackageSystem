@@ -43,7 +43,7 @@ public class UI {
 					return;
 					
 				case "add-package":
-					if ((new Package(null, null)).addPackage(Integer.parseInt(msg.substring(0, msg.indexOf(';'))),
+					if (Package.getSingleton().addPackage(Integer.parseInt(msg.substring(0, msg.indexOf(';'))),
 							msg.substring(msg.indexOf(';') + 1))) {
 						System.out.println("Added new package success");
 					} else {
@@ -51,7 +51,7 @@ public class UI {
 					}
 					break;
 				case "deliver-package":
-					if ((new Package(null, null)).deliverPackage(Integer.parseInt(msg))) {
+					if (Package.getSingleton().deliverPackage(Integer.parseInt(msg))) {
 						System.out.println("Deliver package success");
 					} else {
 						System.out.println("Deliver package failed");
@@ -77,7 +77,7 @@ public class UI {
 					msg = msg.substring(msg.indexOf(';') + 1);
 					String email = msg.substring(0, msg.indexOf(';'));
 
-					if ((new Resident(null)).addResident(name, address, phone, email)) {
+					if (Resident.getSingleton().addResident(name, address, phone, email)) {
 						System.out.println("Added new resident success");
 					} else {
 						System.out.println("Added new resident failed");

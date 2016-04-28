@@ -32,7 +32,16 @@ public class Resident {
 		this.email = email;
 		database = DatabaseSupport.getSingleton();
 	}
+
 	
+	private static Resident singleton = null;
+	
+	public static Resident getSingleton(){
+		if(singleton == null){
+			singleton = new Resident(null);
+		}
+		return singleton;
+	}
 	public boolean addResident(String name, String address, String phone, String email) {
 		
 		//create resident

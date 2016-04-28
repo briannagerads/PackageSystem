@@ -28,6 +28,15 @@ public class Package {
 		deliveredStatus = false;
 	}
 	
+	private static Package singleton = null;
+	
+	public static Package getSingleton(){
+		if(singleton == null){
+			singleton = new Package(null, null);
+		}
+		return singleton;
+	}
+	
 	public boolean addPackage(int name, String info) {
 		
 		//get resident and then create package
