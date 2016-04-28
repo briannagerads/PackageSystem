@@ -15,76 +15,88 @@ public class UI {
 		BufferedReader in = new BufferedReader(new java.io.InputStreamReader(System.in));
 		try {
 			String line = null;
+			Employee me = null;
 			while ((line = in.readLine()) != null) {
-				try{
-				String cmd = line.substring(0, line.indexOf(' '));
-				String msg = "";
-				if (line.length() > line.indexOf(' ') + 1)
-					;
-				msg = line.substring(line.indexOf(' ') + 1);
-				Resident r;
-				Package p;
-				Employee me = null;
-				List<Package> pList;
-				List<Resident> rList;
-				if(me == null && !cmd.equals("login")){
-					System.out.println("You must be logged in to do that.");
-				}
-				switch (cmd) {
-				case "login":
-					if((me = DatabaseSupport.getSingleton().getEmployee(Integer.parseInt(msg))) != null){
-						System.out.println("Hello "+me.name);
-					}else{
-						System.out.println("login failed");
+				try {
+					String cmd;
+					if(line.indexOf(' ') == -1){
+						cmd = line;
+					} else{
+						cmd = line.substring(0, line.indexOf(' '));
 					}
-					break;
-				case "logout":
-					//just exit the program
-					return;
-					
-				case "add-package":
-					if (Package.getSingleton().addPackage(Integer.parseInt(msg.substring(0, msg.indexOf(';'))),
-							msg.substring(msg.indexOf(';') + 1))) {
-						System.out.println("Added new package success");
-					} else {
-						System.out.println("Added new package failed");
+					String msg = "";
+					if (line.length() > line.indexOf(' ') + 1)
+						;
+					msg = line.substring(line.indexOf(' ') + 1);
+					Resident r;
+					Package p;
+					List<Package> pList;
+					List<Resident> rList;
+					if (me == null && !cmd.equals("login")) {
+						System.out.println("You must be logged in to do that.");
 					}
-					break;
-				case "deliver-package":
-					if (Package.getSingleton().deliverPackage(Integer.parseInt(msg))) {
-						System.out.println("Deliver package success");
-					} else {
-						System.out.println("Deliver package failed");
-					}
-					break;
-					
-				case "list-all-packages":
-					pList = DatabaseSupport.getSingleton().getAllPackages();
-					for(Package pl : pList){
-						System.out.println(pl.packageID+"; "+pl.r.name+"; "+pl.description);
-					}
-					System.out.println();
-					break;
-				case "add-resident":
-					String name = msg.substring(0, msg.indexOf(';'));
+					switch (cmd) {
+					case "login":
+						if ((me = DatabaseSupport.getSingleton().getEmployee(Integer.parseInt(msg))) != null) {
+							System.out.println("Hello " + me.name);
+						} else {
+							System.out.println("login failed");
+						}
+						break;
+						
+					case "who-am-i":
+						System.out.println("You are "+ me.name);
+						break;
 
-					msg = msg.substring(msg.indexOf(';') + 1);
-					String address = msg.substring(0, msg.indexOf(';'));
+					case "logout":
+						// just exit the program
+						return;
 
-					msg = msg.substring(msg.indexOf(';') + 1);
-					String phone = msg.substring(0, msg.indexOf(';'));
+					case "add-package":
+						if (Package.getSingleton().addPackage(Integer.parseInt(msg.substring(0, msg.indexOf(';'))),
+								msg.substring(msg.indexOf(';') + 1))) {
+							System.out.println("Added new package success");
+						} else {
+							System.out.println("Added new package failed");
+						}
+						break;
 
-					msg = msg.substring(msg.indexOf(';') + 1);
-					String email = msg.substring(0, msg.indexOf(';'));
+					case "deliver-package":
+						if (Package.getSingleton().deliverPackage(Integer.parseInt(msg))) {
+							System.out.println("Deliver package success");
+						} else {
+							System.out.println("Deliver package failed");
+						}
+						break;
 
-					if (Resident.getSingleton().addResident(name, address, phone, email)) {
-						System.out.println("Added new resident success");
-					} else {
-						System.out.println("Added new resident failed");
+					case "list-all-packages":
+						pList = DatabaseSupport.getSingleton().getAllPackages();
+						for (Package pl : pList) {
+							System.out.println(pl.packageID + "; " + pl.r.name + "; " + pl.description);
+						}
+						System.out.println();
+						break;
+						
+					case "add-resident":
+						String name = msg.substring(0, msg.indexOf(';'));
+
+						msg = msg.substring(msg.indexOf(';') + 1);
+						String address = msg.substring(0, msg.indexOf(';'));
+
+						msg = msg.substring(msg.indexOf(';') + 1);
+						String phone = msg.substring(0, msg.indexOf(';'));
+
+						msg = msg.substring(msg.indexOf(';') + 1);
+						String email = msg.substring(0, msg.indexOf(';'));
+
+						if (Resident.getSingleton().addResident(name, address, phone, email)) {
+							System.out.println("Added new resident success");
+						} else {
+							System.out.println("Added new resident failed");
+						}
+						break;
 					}
-					break;
-				}
-				}catch (Exception e){
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
