@@ -10,18 +10,19 @@ public class Employee {
 	public int employeeID;
 	public DatabaseSupport database = DatabaseSupport.getSingleton();
 	
-	public Employee(String name) {
+	public Employee(String name, int id) {
 		this.name = name;
+		this.employeeID = id;
 	}
 	
-	public boolean addEmployee(String name) {
+	public boolean addEmployee(String name, int id) {
 		
 		//check that employee doesn't already exist
 		//boolean check = database.checkEmployeeExistence(name);
 		//if (check) return false;
 		
 		//create employee
-		Employee e = new Employee(name);
+		Employee e = new Employee(name, id);
 		
 		//put in database
 		boolean status = database.putEmployee(e);

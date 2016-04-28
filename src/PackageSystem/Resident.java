@@ -1,5 +1,6 @@
 package PackageSystem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public class Resident {
 	public Package p;
 	public int rid;
 	public DatabaseSupport database;
-	public List<Package> packages;
+	public List<Package> packages = new ArrayList<>();
 
 	public Resident(String recipient) {
 		name = recipient;

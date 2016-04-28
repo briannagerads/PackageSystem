@@ -59,15 +59,18 @@ public class DatabaseSupport {
 	// }
 
 	public ResultSet query(String sql) throws SQLException {
+		closed = true;
 		return connection.createStatement().executeQuery(sql);
 	}
 
 	public int update(String sql) throws SQLException {
+		closed = true;
 		return connection.createStatement().executeUpdate(sql);
 	}
 
 	private Package packageFromRS(ResultSet rs) throws SQLException {
-		Package p = new Package(getResident(rs.getInt("resident")), rs.getString("info"));
+		Package p = new Package(getResident(rs.getInt("resident")), 
+				"");
 		
 		p.packageID = rs.getInt("pid");
 
@@ -142,7 +145,7 @@ public class DatabaseSupport {
 
 			// close up
 			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
+
 			rs.close();
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -179,12 +182,12 @@ public class DatabaseSupport {
 			ResultSet rs = query("SELECT * FROM `coms362`.`employees` WHERE `eid` = " + eid + ";");
 			if (rs.next()) {
 				String name = rs.getString("name");
-				e = new Employee(name);
+				e = new Employee(name, eid);
 				e.employeeID = eid;
 			}
 			// close up
 			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
+
 			rs.close();
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -211,7 +214,7 @@ public class DatabaseSupport {
 
 			// close up
 			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
+
 			rs.close();
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -241,7 +244,7 @@ public class DatabaseSupport {
 
 			// close up
 			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
+
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -328,7 +331,7 @@ public class DatabaseSupport {
 
 			// close up
 			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
+
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -357,7 +360,7 @@ public class DatabaseSupport {
 
 			// close up
 			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
+
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -468,7 +471,7 @@ public class DatabaseSupport {
 
 			// close up
 			rs.getStatement().getConnection().close();
-			rs.getStatement().close();
+
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

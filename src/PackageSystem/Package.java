@@ -28,8 +28,6 @@ public class Package {
 		deliveredStatus = false;
 	}
 	
-	
-	
 	public boolean addPackage(int name, String info) {
 		
 		//get resident and then create package
