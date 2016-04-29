@@ -15,6 +15,15 @@ public class Employee {
 		this.employeeID = id;
 	}
 	
+	private static Employee singleton = null;
+	
+	public static Employee getSingleton(){
+		if(singleton == null){
+			singleton = new Employee(null, 0);
+		}
+		return singleton;
+	}
+	
 	public boolean addEmployee(String name, int id) {
 		
 		//check that employee doesn't already exist

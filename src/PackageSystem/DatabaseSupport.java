@@ -60,11 +60,15 @@ public class DatabaseSupport {
 
 	public ResultSet query(String sql) throws SQLException {
 		closed = true;
+		if(connection.isClosed())
+			open();
 		return connection.createStatement().executeQuery(sql);
 	}
 
 	public int update(String sql) throws SQLException {
 		closed = true;
+		if(connection.isClosed())
+			open();
 		return connection.createStatement().executeUpdate(sql);
 	}
 
@@ -72,7 +76,7 @@ public class DatabaseSupport {
 		Package p = new Package(getResident(rs.getInt("resident")), 
 				"");
 		
-		p.packageID = rs.getInt("pid");
+		p.packageID = rs.getInt(1);
 
 		p.logger = getEmployee(rs.getInt("logger"));
 		p.location = rs.getString("location");
@@ -106,7 +110,12 @@ public class DatabaseSupport {
 		try {
 			// query database
 			i = update("INSERT INTO `coms362`.`packages` (`pid`, `resident`, `info`, `timestamp`, `logger`, `notes`, `status`, `location`, `company`) VALUES (NULL, '"
-					+ p.r.rid + "', '" + p.description + "', CURRENT_TIMESTAMP, '"+p.logger+"', '"+p.note+"', 0, '"+p.location+"', '"+p.company+"');");
+					+ p.packageOwner.rid + "', '" 
+					+ p.description + "', CURRENT_TIMESTAMP, '"
+					+p.logger.employeeID+"', '"
+					+p.note+"', 0, '"
+					+p.location+"', '"
+					+p.company+"');");
 
 			// close up
 
@@ -144,9 +153,6 @@ public class DatabaseSupport {
 			}
 
 			// close up
-			rs.getStatement().getConnection().close();
-
-			rs.close();
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 			return null;
@@ -156,8 +162,14 @@ public class DatabaseSupport {
 
 	public boolean deleteEmployee(Employee e) {
 		// remove from database
-
-		return true;
+		int i = -1;
+		try {
+			i = update("DELETE FROM `coms362`.`employees` WHERE `eid` = " + e.employeeID + ";");
+		}
+		catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		return i != -1;
 	}
 
 	public boolean putEmployee(Employee e) {
@@ -186,9 +198,6 @@ public class DatabaseSupport {
 				e.employeeID = eid;
 			}
 			// close up
-			rs.getStatement().getConnection().close();
-
-			rs.close();
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 			return null;
@@ -198,8 +207,14 @@ public class DatabaseSupport {
 
 	public boolean deleteResident(Resident r) {
 		// remove from database
-
-		return true;
+		int i = -1;
+		try {
+			i = update("DELETE FROM `coms362`.`residents` WHERE `uid` = " + r.rid + ";");
+		}
+		catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		return i != -1;
 	}
 
 	public Package getPackage(int packageID) {
@@ -213,9 +228,6 @@ public class DatabaseSupport {
 			}
 
 			// close up
-			rs.getStatement().getConnection().close();
-
-			rs.close();
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 			return null;
@@ -243,9 +255,6 @@ public class DatabaseSupport {
 			}
 
 			// close up
-			rs.getStatement().getConnection().close();
-
-			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -330,9 +339,6 @@ public class DatabaseSupport {
 			}
 
 			// close up
-			rs.getStatement().getConnection().close();
-
-			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -359,9 +365,6 @@ public class DatabaseSupport {
 			}
 
 			// close up
-			rs.getStatement().getConnection().close();
-
-			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -401,7 +404,7 @@ public class DatabaseSupport {
 		try {
 			// query database
 			i = update("UPDATE `coms362`.`residents` SET `address` = '" + r.address
-					+ "' WHERE `residents`.`rid` = " + r.rid + ";");
+					+ "' WHERE `residents`.`uid` = " + r.rid + ";");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -415,7 +418,7 @@ public class DatabaseSupport {
 		try {
 			// query database
 			i = update("UPDATE `coms362`.`residents` SET `phone` = '" + r.phone
-					+ "' WHERE `residents`.`rid` = " + r.rid + ";");
+					+ "' WHERE `residents`.`uid` = " + r.rid + ";");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -429,7 +432,7 @@ public class DatabaseSupport {
 		try {
 			// query database
 			i = update("UPDATE `coms362`.`residents` SET `email` = '" + r.email
-					+ "' WHERE `residents`.`rid` = " + r.rid + ";");
+					+ "' WHERE `residents`.`uid` = " + r.rid + ";");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -443,7 +446,7 @@ public class DatabaseSupport {
 		try {
 			// query database
 			i = update("UPDATE `coms362`.`residents` SET `username` = '" + r.username
-					+ "' WHERE `residents`.`rid` = " + r.rid + ";");
+					+ "' WHERE `residents`.`uid` = " + r.rid + ";");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -464,15 +467,11 @@ public class DatabaseSupport {
 			while (rs.next()) {
 				// create package object
 				Package p = packageFromRS(rs);
-
 				// add to list
 				list.add(p);
 			}
 
 			// close up
-			rs.getStatement().getConnection().close();
-
-			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;

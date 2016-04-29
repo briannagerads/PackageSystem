@@ -13,7 +13,7 @@ public class Package {
 	public DatabaseSupport database;
 	public String location;
 	public Employee logger;
-	public String note;
+	public String note = "";
 	public String company;
 	public String date;
 	public int packageID;
@@ -40,8 +40,12 @@ public class Package {
 	public boolean addPackage(int name, String info) {
 		
 		//get resident and then create package
-		r = database.getResident(name);
+		r = DatabaseSupport.getSingleton().getResident(name);
+		if(r == null){
+			return false;
+		}
 		p = new Package(r, info);
+		p.logger = UI.me;
 		
 		//add package to resident's list of packages
 		r.packages.add(p);
